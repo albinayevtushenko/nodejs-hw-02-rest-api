@@ -15,7 +15,11 @@ async function getContactById(contactId) {
 
   const result = contacts.find((item) => item.id === contactId);
 
-  return result || null;
+  if (!result) {
+    return null;
+  }
+
+  return result;
 }
 
 async function removeContact(contactId) {
@@ -45,8 +49,9 @@ async function addContact(body) {
 
 const updateContact = async (contactId, body) => {
   const contacts = await listContacts();
-  const index = contacts.findIndex((contact) => contact.id === contactId);
+  const index = contacts.findIndex((item) => item.id === contactId);
   if (index === -1) {
+    console.log("There is no contact with such ID");
     return null;
   }
   contacts[index] = { id: contactId, ...body };

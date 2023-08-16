@@ -2,13 +2,20 @@ const express = require("express");
 const contacts = require("../../models/contacts");
 const { HttpError } = require("../../Helpers");
 
-const joi = require("joi");
+const Joi = require("joi");
 
 const router = express.Router();
 
-const addSchema = joi.object({
-  title: joi.string().required(),
-  author: joi.string().required(),
+const addSchema = Joi.object({
+  name: Joi.string()
+    .required()
+    .messages({ "any.required": "missing required name field" }),
+  email: Joi.string()
+    .required()
+    .messages({ "any.required": "missing required email field" }),
+  phone: Joi.string()
+    .required()
+    .messages({ "any.required": "missing required phone field" }),
 });
 
 router.get("/", async (req, res, next) => {
@@ -38,7 +45,7 @@ router.post("/", async (req, res, next) => {
     const { error } = addSchema.validate(req.body);
     if (error) {
       console.log(error);
-      throw HttpError(400, "missing required name field");
+      throw HttpError(400, "Not found");
     }
 
     const result = await contacts.addContact(req.body);
@@ -57,7 +64,7 @@ router.delete("/:contactId", async (req, res, next) => {
     }
 
     res.json({
-      message: "contact deleted",
+      message: "Contact deleted",
     });
   } catch (error) {
     next(error);
@@ -75,7 +82,7 @@ router.put("/:contactId", async (req, res, next) => {
     if (!result) {
       throw HttpError(404, "Not found");
     }
-    res.json(result);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
