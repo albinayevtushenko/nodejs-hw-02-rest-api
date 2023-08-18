@@ -1,9 +1,14 @@
 const Joi = require("joi");
 
 const contactsSchema = Joi.object({
-  name: Joi.string().min(2).max(255).required(),
-  email: Joi.string().min(4).max(255).required().email(),
-  phone: Joi.string().min(4).max(20).required(),
+  name: Joi.string().required().error(new Error("missing required name field")),
+  email: Joi.string()
+    .required()
+    .email()
+    .error(new Error("missing required email field")),
+  phone: Joi.string()
+    .required()
+    .error(new Error("missing required phone field")),
 });
 
 module.exports = contactsSchema;
