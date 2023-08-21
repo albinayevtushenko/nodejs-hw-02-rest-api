@@ -12,4 +12,11 @@ const contactsSchema = Joi.object({
   }),
 });
 
-module.exports = contactsSchema;
+// const updateFavoriteSchema = Joi.object({
+//   favorite: Joi.boolean().required(),
+// });
+
+module.exports = {
+  contactsSchema,
+  // updateFavoriteSchema,
+};

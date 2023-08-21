@@ -6,6 +6,7 @@ const {
   addContact,
   removeContact,
   updateContact,
+  // updateFavorite,
 } = require("../../controllers/contactsControllers");
 
 const { contactsSchema } = require("../../schemas");
@@ -22,5 +23,11 @@ router.post("/", validateBody(contactsSchema), addContact);
 router.delete("/:contactId", removeContact);
 
 router.put("/:contactId", validateBody(contactsSchema), updateContact);
+
+// router.patch(
+//   "/:contactId/favorite",
+//   validateBody(updateFavoriteSchema),
+//   updateFavorite
+// );
 
 module.exports = router;
