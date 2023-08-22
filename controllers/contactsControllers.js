@@ -1,64 +1,88 @@
-const contactsService = require("../models/contacts");
+const Contact = require("../models/contact");
 const { HttpError } = require("../Helpers");
 const { controllerWrapper } = require("../decorators");
 
-const getAllContacts = async (_, res) => {
-  const result = await contactsService.listContacts();
-  res.json(result);
-};
-
-const getContactById = async (req, res) => {
-  const { contactId } = req.params;
-  const result = await contactsService.getContactById(contactId);
-
-  if (!result) {
-    throw HttpError(404, "Not found");
+const getAllContacts = async (req, res, next) => {
+  try {
+    const docs = await Contact.find().exec();
+    return res.send(docs);
+  } catch (error) {
+    next(error);
   }
-
-  res.json(result);
 };
 
-const addContact = async (req, res) => {
-  const result = await contactsService.addContact(req.body);
-  res.status(201).json(result);
-};
-
-const removeContact = async (req, res) => {
-  const { contactId } = req.params;
-  const result = await contactsService.removeContact(contactId);
-
-  if (!result) {
-    throw HttpError(404, "Not found");
-  }
-
-  res.json({ message: "contact deleted" });
-};
-
-const updateContact = async (req, res) => {
+const getContactById = async (req, res, next) => {
   const { contactId } = req.params;
 
-  const result = await contactsService.updateContact(contactId, req.body);
+  try {
+    const docs = await Contact.findById(contactId).exec();
 
-  if (!result) {
-    throw HttpError(404, "Not found");
+    if (docs === null) {
+      throw HttpError(404, "Not found");
+    }
+
+    return res.send(docs);
+  } catch (error) {
+    next(error);
   }
-
-  res.json(result);
 };
 
-// const updateFavorite = async (req, res) => {
-//   const { contactId } = req.params;
-//   if (!req.body) {
-//     throw HttpError(400, "missing field favorite");
-//   }
-//   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
-//     new: true,
-//   });
-//   if (!result) {
-//     throw HttpError(404, "Not Found");
-//   }
-//   res.json(result);
-// };
+const addContact = async (req, res, next) => {
+  try {
+    const doc = await Contact.create(req.body);
+    res.status(201).send(doc);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removeContact = async (req, res, next) => {
+  const { contactId } = req.params;
+  try {
+    const result = await Contact.findByIdAndRemove(contactId).exec();
+
+    if (result === null) {
+      throw HttpError(404, "Not found");
+    }
+
+    res.send({ message: "contact deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateContact = async (req, res, next) => {
+  const { contactId } = req.params;
+
+  try {
+    const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+      new: true,
+    }).exec();
+
+    if (result === null) {
+      throw HttpError(404, "Not found");
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateFavorite = async (req, res, next) => {
+  const { contactId } = req.params;
+  try {
+    const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+      new: true,
+    }).exec();
+    if (result === null) {
+      throw HttpError(404, "Not Found");
+    }
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getAllContacts: controllerWrapper(getAllContacts),
@@ -66,5 +90,5 @@ module.exports = {
   addContact: controllerWrapper(addContact),
   removeContact: controllerWrapper(removeContact),
   updateContact: controllerWrapper(updateContact),
-  // updateFavorite: controllerWrapper(updateFavorite),
+  updateFavorite: controllerWrapper(updateFavorite),
 };

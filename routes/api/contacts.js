@@ -6,11 +6,12 @@ const {
   addContact,
   removeContact,
   updateContact,
-  // updateFavorite,
+  updateFavorite,
 } = require("../../controllers/contactsControllers");
 
-const { contactsSchema } = require("../../schemas");
+const { contactsSchema, updateFavoriteSchema } = require("../../schemas");
 const { validateBody } = require("../../decorators");
+const { validation } = require("../../decorators");
 
 const router = express.Router();
 
@@ -24,10 +25,10 @@ router.delete("/:contactId", removeContact);
 
 router.put("/:contactId", validateBody(contactsSchema), updateContact);
 
-// router.patch(
-//   "/:contactId/favorite",
-//   validateBody(updateFavoriteSchema),
-//   updateFavorite
-// );
+router.patch(
+  "/:contactId/favorite",
+  validation(updateFavoriteSchema),
+  updateFavorite
+);
 
 module.exports = router;
