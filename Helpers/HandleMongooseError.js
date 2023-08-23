@@ -3,4 +3,4 @@ const handleMongooseError = (error, data, next) => {
   next();
 };
 
-module.esports = handleMongooseError;
+module.exports = handleMongooseError;
